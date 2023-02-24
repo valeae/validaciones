@@ -1,39 +1,26 @@
 import React from "react";
 import { useFormik } from "formik";
+import * as Yup from "yup";
 
 export default function Login() {
-    const validate = values => {
-    const errors = {}
 
-        if (!values.name) {
-        errors.name = "UserName is required!";
-        } else if (values.name.length < 10) {
-        errors.name = "UserName has to be 10 character at less!";
-        }
-
-        if (!values.email) {
-            errors.email = "Email is required!";
-        } else if (values.email.length < 10) {
-            errors.email = "Invalid email address";
-        }
-
-        if (!values.password) {
-            errors.password = 'Password is required!'
-        } else if (values.password.length < 8) {
-            errors.password = 'Must be 8 characters or more'
-        } else if (values.password === '12345678') {
-            errors.password = 'Must not be 12345678 !!!'
-        }
-
-        return errors
-    };
     const formik = useFormik({
         initialValues: {
             name: "",
             email: "",
             password: ""
         },
-        validate,
+        validationSchema: Yup.object({
+            name: Yup.string()
+                .required('Required field')
+                .max(25, 'Must be 25 characters or less'),
+            email: Yup.string()
+                .required('Required field')
+                .email('Invalid email address'),
+            password: Yup.string()
+            .required('Required field')
+            .min(5, 'Must be 5 characters or less'),
+        }),
         onSubmit: values => {
             alert(JSON.stringify(values, null, 2));
         }
@@ -49,30 +36,27 @@ export default function Login() {
                 id="name"
                 name="name"
                 type="text"
-                onChange={formik.handleChange}
-                value={formik.values.name}
+                {...formik.getFieldProps('name')}
             />
-            {formik.errors.name ? <div>{formik.errors.name}</div> : null}
+            {formik.touched.name && formik.errors.name ? (<div>{formik.errors.name}</div>) : null}
 
             <label htmlFor="email">Email Address</label>
             <input
                 id="email"
                 name="email"
                 type="email"
-                onChange={formik.handleChange}
-                value={formik.values.email}
+                {...formik.getFieldProps('email')}
             />
-            {formik.errors.email ? <div>{formik.errors.email}</div> : null}
+            {formik.touched.email && formik.errors.email ? (<div>{formik.errors.email}</div>) : null}
 
             <label htmlFor="password">Password</label>
             <input
                 id="password"
                 name="password"
                 type="password"
-                onChange={formik.handleChange}
-                value={formik.values.password}
+                {...formik.getFieldProps('password')}
             />
-            {formik.errors.password ? <div>{formik.errors.password}</div> : null}
+            {formik.touched.password && formik.errors.password ? (<div>{formik.errors.password}</div>) : null}
 
             <button type="submit">Submit</button>
             </form>
